@@ -28,33 +28,42 @@ const getStudyLogsDb = async (username) => {
   }
 }
 
-const updateStudyLogDb = async (_id, data) => {
+const updateStudyLogDb = async (_id, { contents }) => {
   const dbConnect = dbo.getDb();
   const studyLogs = dbConnect.collection('studyLogs');
-  await studyLogs.updateOne({ _id: ObjectId(_id) }, { $set: data });
+  const result = await studyLogs.updateOne({ _id: ObjectId(_id) }, { $set: { contents }});
+  if (result.matchedCount !== 1) throw new Error('Failed to update the study log');
 };
 
 const addStudyLogDb = async (username, data) => {
+  const {date: dateString, ...elseData} = data;
+  const dateObject = new Date(dateString);
   const dbConnect = dbo.getDb();
   const users = dbConnect.collection('users');
   const studyLogs = dbConnect.collection('studyLogs');
-  const result = await studyLogs.insertOne(data);
 
-  const subjectDict = {};
-  for (const { subjects } of data.contents) {
-    for (subject of subjects) {
-      subjectDict[subject] = (subjectDict[subjectDict] || 0) + 1;
-    }
-  }
+  const user = await users.findOne({ username: username });
+  const exists = await studyLogs.findOne({
+    _id: {
+      $in: user.studyLogs
+    },
+    date: dateObject
+  });
 
-  await users.updateOne({ username: username }, { $push: { studyLogs: result.insertedId, $inc: { subjects: subjectDict } } });
+  if (exists) throw new Error('Study log for the date already exists');
+
+  const result = await studyLogs.insertOne({date: dateObject, ...elseData});
+  await users.updateOne({ username: username }, { $push: { studyLogs: result.insertedId } });
 };
 
 const deleteStudyLogDb = async (username, _id) => {
   const dbConnect = dbo.getDb();
   const users = dbConnect.collection('users');
   const studyLogs = dbConnect.collection('studyLogs');
-  await studyLogs.deleteOne({ _id: ObjectId(_id) });
+  const result = await studyLogs.deleteOne({ _id: ObjectId(_id) });
+
+  if (result.deletedCount === 0) throw new Error('The study log does not exist');
+
   await users.updateOne({ username: username }, { $pull: { studyLogs: ObjectId(_id) } });
 };
 

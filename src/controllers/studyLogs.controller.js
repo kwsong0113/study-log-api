@@ -29,7 +29,7 @@ const postStudyLog = async (req, res) => {
 
 const deleteStudyLog = async (req, res) => {
   try {
-    await deleteStudyLogDb(req.body._id);
+    await deleteStudyLogDb(req.body.username, req.body._id);
     res.sendStatus(200);
   } catch(err) {
     res.sendStatus(500);
