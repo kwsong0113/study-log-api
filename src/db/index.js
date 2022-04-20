@@ -7,7 +7,7 @@ const createUserDb = async (userData) => {
 
   const userCheck = await users.findOne({ username: userData.username });
   if (userCheck) return { success: false };
-  await users.insertOne({ ...userData, subjects: {}, studyLogs: [], todos: [] });
+  await users.insertOne({ ...userData, studyLogs: [], todos: [] });
   return { success: true };
 }
 
