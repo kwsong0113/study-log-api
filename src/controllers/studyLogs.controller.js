@@ -2,7 +2,6 @@ const { getStudyLogsDb, addStudyLogDb, updateStudyLogDb, deleteStudyLogDb } = re
 
 const getStudyLogs = async (req, res) => {
   try {
-    console.log(req.body);
     const response = await getStudyLogsDb(req.params.username);
     if (response.noUser) {
       res.sendStatus(404);
@@ -10,7 +9,7 @@ const getStudyLogs = async (req, res) => {
       res.status(200).json(response);
     }
   } catch(err) {
-    res.status(200).json(err);
+    res.sendStatus(500);
   }
 };
 
