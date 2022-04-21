@@ -10,7 +10,7 @@ router.route('/')
 router.route("/users")
 .get(users.getUsers);
 
-router.route("/users/setUserInfo/:username")
+router.route("/users/info/:username")
 .post(users.setUserInfo);
 
 router.route("/users/:username")

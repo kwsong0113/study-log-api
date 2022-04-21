@@ -16,7 +16,7 @@ const getUsersDb = async () => {
   const users = dbConnect.collection('users');
 
   const userList = await users.find({}).toArray();
-  return userList.map(({ email, username, studyLogs }) => ({ email, username, numStudyLogs: studyLogs.length }));
+  return userList.map(({ email, username, studyLogs, geoip }) => ({ email, username, numStudyLogs: studyLogs.length, geoip }));
 }
 
 const setUserInfoDb = async (username, info) => {
