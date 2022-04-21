@@ -1,4 +1,4 @@
-const { createUserDb } = require('../db');
+const { createUserDb, getUsersDb } = require('../db');
 
 const createUser = async (req, res) => {
   try {
@@ -8,9 +8,18 @@ const createUser = async (req, res) => {
     } else {
       res.sendStatus(400);
     }
-  } catch(err) {
+  } catch (err) {
     res.sendStatus(500);
   }
 };
 
-module.exports = { createUser };
+const getUsers = async (req, res) => {
+  try {
+    const response = await getUsersDb();
+    res.status(200).json(response);
+  } catch (err) {
+    res.sendStatus(500);
+  }
+}
+
+module.exports = { createUser, getUsers };

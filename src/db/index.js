@@ -11,6 +11,14 @@ const createUserDb = async (userData) => {
   return { success: true };
 }
 
+const getUsersDb = async () => {
+  const dbConnect = dbo.getDb();
+  const users = dbConnect.collection('users');
+
+  const userList = await users.find({}).toArray();
+  return userList.map(({ email, username, studyLogs }) => ({ email, username, numStudyLogs: studyLogs.length }));
+}
+
 const getStudyLogsDb = async (username) => {
   const dbConnect = dbo.getDb();
   const users = dbConnect.collection('users');
@@ -67,4 +75,4 @@ const deleteStudyLogDb = async (username, _id) => {
   await users.updateOne({ username: username }, { $pull: { studyLogs: ObjectId(_id) } });
 };
 
-module.exports = { createUserDb, getStudyLogsDb, updateStudyLogDb, addStudyLogDb, deleteStudyLogDb };
+module.exports = { createUserDb, getUsersDb, getStudyLogsDb, updateStudyLogDb, addStudyLogDb, deleteStudyLogDb };
