@@ -16,7 +16,7 @@ const getTodos = async (req, res) => {
 const postTodos = async (req, res) => {
   try {
     const { _id, notes } = req.body;
-    await postTodos(_id, data);
+    await postTodos(_id, notes);
     res.sendStatus(200);
   } catch(err) {
     res.sendStatus(500);
