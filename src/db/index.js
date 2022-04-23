@@ -4,10 +4,12 @@ const { ObjectId } = require('mongodb');
 const createUserDb = async (userData) => {
   const dbConnect = dbo.getDb();
   const users = dbConnect.collection('users');
+  const todos = dbConnect.collection('todos');
 
   const userCheck = await users.findOne({ username: userData.username });
   if (userCheck) return { success: false };
-  await users.insertOne({ ...userData, studyLogs: [], todos: [] });
+  const result = await todos.insertOne({notes: []});
+  await users.insertOne({ ...userData, studyLogs: [], todos: result.insertedId });
   return { success: true };
 }
 
@@ -84,4 +86,24 @@ const deleteStudyLogDb = async (username, _id) => {
   await users.updateOne({ username: username }, { $pull: { studyLogs: ObjectId(_id) } });
 };
 
-module.exports = { createUserDb, getUsersDb, setUserInfoDb, getStudyLogsDb, updateStudyLogDb, addStudyLogDb, deleteStudyLogDb };
+const getTodosDb = async (username) => {
+  const dbConnect = dbo.getDb();
+  const users = dbConnect.collection('users');
+  const todos = dbConnect.collection('todos');
+
+  const user = await users.findOne({ username: username });
+  if (user?.todos) {
+    return await todos.findOne({_id: user.todos});
+  } else {
+    return { noUser: true };
+  }
+};
+
+const postTodosDb = async (_id, notes) => {
+  const dbConnect = dbo.getDb();
+  const todos = dbConnect.collection('todos');
+  const result = await todos.updateOne({ _id: ObjectId(_id) }, { $set: { notes }});
+  if (result.matchedCount !== 1) throw new Error('Failed to update the todos');
+}
+
+module.exports = { createUserDb, getUsersDb, setUserInfoDb, getStudyLogsDb, updateStudyLogDb, addStudyLogDb, deleteStudyLogDb, getTodosDb, postTodosDb };

@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { users, studyLogs } = require('../controllers');
+const { users, studyLogs, todos } = require('../controllers');
 
 const router = express.Router();
 
@@ -20,5 +20,9 @@ router.route("/studylogs/:username")
 .get(studyLogs.getStudyLogs)
 .post(studyLogs.postStudyLog)
 .delete(studyLogs.deleteStudyLog);
+
+router.route("/todos/:username")
+.get(todos.getTodos)
+.post(todos.postTodos)
 
 module.exports = router;
