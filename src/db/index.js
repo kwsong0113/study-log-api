@@ -41,7 +41,7 @@ const getStudyLogsDb = async (username) => {
       _id: {
         $in: user.studyLogs
       }
-    }).sort({ date: 1 }).toArray();
+    }).sort({ date: -1 }).toArray();
   } else {
     return { noUser: true };
   }
